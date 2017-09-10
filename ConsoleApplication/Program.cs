@@ -15,7 +15,9 @@ namespace ConsoleApplication
 
             //InsertNinja();
             //InsertMultipleNinjas();
-            SimpleNinjaQueries();
+            //SimpleNinjaQueries();
+            QueryAndUpdateNinja();
+
 
             Console.ReadKey();
         }
@@ -84,6 +86,51 @@ namespace ConsoleApplication
                                         .OrderBy(e => e.Name)
                                         .Take(1)
                                         .FirstOrDefault();  // Execute the query here
+            }
+        }
+
+        private static void QueryAndUpdateNinja()
+        {
+            using (var context = new NinjaContext())
+            {
+                context.Database.Log = Console.WriteLine;
+                var ninja = context.Ninjas.FirstOrDefault();
+                context.SaveChanges();  // No update queries will be made if there is no changes
+
+                ninja.ServedInOniwaban = !ninja.ServedInOniwaban;
+                context.SaveChanges();  // Will make a update query, because there is changes
+            }
+        }
+
+        private static void QueryAndUpdateNinjaDisconnected()
+        {
+            Ninja ninja;
+
+            // Context A
+            using (var context = new NinjaContext())
+            {
+                context.Database.Log = Console.WriteLine;
+                ninja = context.Ninjas.FirstOrDefault();
+            }
+
+            // Change made out of contexts
+            ninja.ServedInOniwaban = !ninja.ServedInOniwaban;
+
+            // Context B
+            using (var context = new NinjaContext())
+            {
+                context.Database.Log = Console.WriteLine;
+
+                context.SaveChanges();                      // Don't know about the change in ninja
+
+                // Option 1
+                context.Ninjas.Add(ninja);
+                context.SaveChanges();
+
+                // Option 2
+                context.Ninjas.Attach(ninja);
+                context.Entry(ninja).State = EntityState.Modified;
+                context.SaveChanges();
             }
         }
     }
