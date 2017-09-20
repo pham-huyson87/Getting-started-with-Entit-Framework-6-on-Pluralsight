@@ -16,8 +16,9 @@ namespace ConsoleApplication
             //InsertNinja();
             //InsertMultipleNinjas();
             //SimpleNinjaQueries();
-            QueryAndUpdateNinja();
-
+            //QueryAndUpdateNinja();
+            //RetrieveDataWithFind();
+            RetrieveDataWithStoredProc();
 
             Console.ReadKey();
         }
@@ -131,6 +132,36 @@ namespace ConsoleApplication
                 context.Ninjas.Attach(ninja);
                 context.Entry(ninja).State = EntityState.Modified;
                 context.SaveChanges();
+            }
+        }
+
+        private static void RetrieveDataWithFind()
+        {
+            var keyValue = 4;
+
+            using (var context = new NinjaContext())
+            {
+                context.Database.Log = Console.WriteLine;
+
+                var ninja = context.Ninjas.Find(keyValue);          // After, the context have Ninjas are in memory
+                Console.WriteLine("After Find#1: " + ninja.Name);
+
+                var sameNinja = context.Ninjas.Find(keyValue);      // We don't query the database, here
+                Console.WriteLine("After Find#2: " + ninja.Name);
+            }
+        }
+
+        private static void RetrieveDataWithStoredProc()
+        {
+            using (var context = new NinjaContext())
+            {
+                context.Database.Log = Console.WriteLine;
+
+                var ninjas = context.Ninjas.SqlQuery("exec GetOldNinjas");
+                foreach (var ninja in ninjas)
+                {
+                    Console.WriteLine(ninja.Name);
+                }
             }
         }
     }
