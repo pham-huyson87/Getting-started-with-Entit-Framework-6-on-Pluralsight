@@ -19,8 +19,8 @@ namespace ConsoleApplication
             //QueryAndUpdateNinja();
             //RetrieveDataWithFind();
             //RetrieveDataWithStoredProc();
-            DeleteNinja();
-
+            //DeleteNinja();
+            DeleteNinjaWithKeyValue();
 
             Console.ReadKey();
         }
@@ -197,6 +197,24 @@ namespace ConsoleApplication
 
                 context.Entry(ninjaa).State = EntityState.Deleted;      // Solution 2
                 context.SaveChanges();
+            }
+        }
+
+        private static void DeleteNinjaWithKeyValue()
+        {
+            var keyVal = 1;
+
+            using (var context = new NinjaContext())
+            {
+                context.Database.Log = Console.WriteLine;
+
+                // 2 DB round trip
+                var ninja = context.Ninjas.Find(keyVal);        // First DB round trip
+                context.Ninjas.Remove(ninja);                   // Second DB round trip
+                context.SaveChanges();
+
+                // 1 DB round trip (best option)
+                context.Database.ExecuteSqlCommand("exec DeleteNinjaViaId {0}", keyVal);
             }
         }
     }
