@@ -18,7 +18,9 @@ namespace ConsoleApplication
             //SimpleNinjaQueries();
             //QueryAndUpdateNinja();
             //RetrieveDataWithFind();
-            RetrieveDataWithStoredProc();
+            //RetrieveDataWithStoredProc();
+            DeleteNinja();
+
 
             Console.ReadKey();
         }
@@ -162,6 +164,39 @@ namespace ConsoleApplication
                 {
                     Console.WriteLine(ninja.Name);
                 }
+            }
+        }
+
+        private static void DeleteNinja()
+        {
+            // Scenario 1 - Simple delete operation
+            using (var context = new NinjaContext())
+            {
+                context.Database.Log = Console.WriteLine;
+                var ninja = context.Ninjas.FirstOrDefault();
+                context.Ninjas.Remove(ninja);
+            }
+
+
+            // Scenario 2 - Disconnected
+            Ninja ninjaa;
+
+            using (var context = new NinjaContext())
+            {
+                context.Database.Log = Console.WriteLine;
+                ninjaa = context.Ninjas.FirstOrDefault();
+            }
+
+            using (var context = new NinjaContext())
+            {
+                context.Database.Log = Console.WriteLine;
+                //context.Ninjas.Remove(ninja);                         // Will crash, the context don't know about the other ninja context
+
+                //context.Ninjas.Attach(ninja);                         // Solution 1
+                //context.Ninjas.Remove(ninja);
+
+                context.Entry(ninjaa).State = EntityState.Deleted;      // Solution 2
+                context.SaveChanges();
             }
         }
     }
