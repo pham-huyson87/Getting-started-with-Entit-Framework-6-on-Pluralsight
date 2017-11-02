@@ -20,7 +20,9 @@ namespace ConsoleApplication
             //RetrieveDataWithFind();
             //RetrieveDataWithStoredProc();
             //DeleteNinja();
-            DeleteNinjaWithKeyValue();
+            //DeleteNinjaWithKeyValue();
+            InsertNinjaWithEquipment();
+
 
             Console.ReadKey();
         }
@@ -215,6 +217,50 @@ namespace ConsoleApplication
 
                 // 1 DB round trip (best option)
                 context.Database.ExecuteSqlCommand("exec DeleteNinjaViaId {0}", keyVal);
+            }
+        }
+
+        private static void InsertNinjaWithEquipment()
+        {
+            using (var context = new NinjaContext())
+            {
+                context.Database.Log = Console.WriteLine;
+
+                var ninja = new Ninja()
+                {
+                    Name = "KacyCatanzaro",
+                    ServedInOniwaban = false,
+                    DateOfBirth = new DateTime(1990, 1, 14),
+                    ClanId = 1
+                };
+
+                var muscles = new NinjaEquipment()
+                {
+                    Name = "Muscles",
+                    Type = EquipmentType.Tool
+                };
+
+                var spunk = new NinjaEquipment()
+                {
+                    Name = "Spunk",
+                    Type = EquipmentType.Weapon
+                };
+
+                //
+                // Equipments is not add explicitly on the context
+                //   It works.
+                //
+                // The operation is done in one transaction with one connection.
+                //
+                // The NinjaEquipment model don't contain a FK for a Ninja.
+                //   A FK is create to maintain the relation with from the models.
+                //     Ninja_Id
+                //     [Model]_[ModelPK]
+                //
+                context.Ninjas.Add(ninja);
+                ninja.EquipmentOwned.Add(muscles);
+                ninja.EquipmentOwned.Add(spunk);
+                context.SaveChanges();
             }
         }
     }

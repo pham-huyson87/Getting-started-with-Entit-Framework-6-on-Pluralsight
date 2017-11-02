@@ -61,6 +61,10 @@
     <Compile Include="Migrations\201709200051312_add-get-old-ninjas-sp.Designer.cs">
       <DependentUpon>201709200051312_add-get-old-ninjas-sp.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709210047323_add-delete-ninja-via-id-sp.cs" />
+    <Compile Include="Migrations\201709210047323_add-delete-ninja-via-id-sp.Designer.cs">
+      <DependentUpon>201709210047323_add-delete-ninja-via-id-sp.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="NinjaContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -84,6 +88,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709200051312_add-get-old-ninjas-sp.resx">
       <DependentUpon>201709200051312_add-get-old-ninjas-sp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709210047323_add-delete-ninja-via-id-sp.resx">
+      <DependentUpon>201709210047323_add-delete-ninja-via-id-sp.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
