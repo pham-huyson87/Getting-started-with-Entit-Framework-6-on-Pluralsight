@@ -21,8 +21,8 @@ namespace ConsoleApplication
             //RetrieveDataWithStoredProc();
             //DeleteNinja();
             //DeleteNinjaWithKeyValue();
-            InsertNinjaWithEquipment();
-
+            //InsertNinjaWithEquipment();
+            SimpleNinjaGraphQuery();
 
             Console.ReadKey();
         }
@@ -261,6 +261,37 @@ namespace ConsoleApplication
                 ninja.EquipmentOwned.Add(muscles);
                 ninja.EquipmentOwned.Add(spunk);
                 context.SaveChanges();
+            }
+        }
+
+        private static void SimpleNinjaGraphQuery()
+        {
+            using (var context = new NinjaContext())
+            {
+                context.Database.Log = Console.WriteLine;
+
+                // Eager Loading - Preset
+                var ninja = context.Ninjas
+                                        .Include(n => n.EquipmentOwned)
+                                        .FirstOrDefault(n => n.Name.StartsWith("Kacy"));
+
+
+                // Explicit Loading - On runtime
+                ninja = context.Ninjas
+                                    .FirstOrDefault(n => n.Name.StartsWith("Kacy"));
+
+                context
+                    .Entry(ninja)                           // This ninja.
+                    .Collection(n => n.EquipmentOwned)      // This property.
+                    .Load();                                // Load it. (trigger database call)
+                    
+
+                // Lazy loading - On call (with virtual on property)
+                ninja = context.Ninjas
+                                    .FirstOrDefault(n => n.Name.StartsWith("Kacy"));
+
+                ninja.EquipmentOwned    // No call is made to the database here.
+                        .Count();       // The database call is trigger here.
             }
         }
     }
