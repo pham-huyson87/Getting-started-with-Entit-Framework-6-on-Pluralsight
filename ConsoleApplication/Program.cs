@@ -22,7 +22,8 @@ namespace ConsoleApplication
             //DeleteNinja();
             //DeleteNinjaWithKeyValue();
             //InsertNinjaWithEquipment();
-            SimpleNinjaGraphQuery();
+            //SimpleNinjaGraphQuery();
+            ProjectionQuery();
 
             Console.ReadKey();
         }
@@ -292,6 +293,26 @@ namespace ConsoleApplication
 
                 ninja.EquipmentOwned    // No call is made to the database here.
                         .Count();       // The database call is trigger here.
+            }
+        }
+
+        private static void ProjectionQuery()
+        {
+            using (var context = new NinjaContext())
+            {
+                context.Database.Log = Console.WriteLine;
+                var ninjas = context.Ninjas
+                                        .Select(n => new
+                                        {
+                                            n.Name,
+                                            n.DateOfBirth,
+                                            n.EquipmentOwned
+                                        })
+                                        .ToList();              // Return a list of Anonymous Type
+                                                                // There is 2 SQL query in this operation.
+                                                                //   1. Retrieve every Ninja with all the field.
+                                                                //   2. Retrieve every Ninja from the previous query but with fields needed.
+                                                                //          => Projection
             }
         }
     }
